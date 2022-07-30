@@ -22,6 +22,7 @@ const userSchema = Schema({
     myProjects:{
         type:Array,default:[]
     },
+    isAdmin:Boolean
    
     // gender: {
     //     type: String,

@@ -1,6 +1,5 @@
 const ProjectModel = require('../models/ProjectModel')
 const userModel = require('../models/UserModel')
-
 const AddProject = async (req, res) => {
   const { projectName } = req.body
   if (!projectName) {
@@ -44,7 +43,6 @@ const addTodo = async (req, res) => {
           todos: { name: name, description: description, owner: user[0] },
         },
       },
-
       { upsert: true },
       (err, docs) => {
         if (err) {
@@ -59,8 +57,8 @@ const addTodo = async (req, res) => {
       { $push: { todos: { name: name, description: description } } },
       { upsert: true },
       (err,docs)=>{
-        if(!err){
-            console.log(docs,"user")
+        if(err){
+            console.log(err,"user")
         }
       }
     ).clone()
@@ -91,26 +89,25 @@ const addUserInProject = async (req, res) => {
   const { userId } = req.body
   const user = await userModel.find({ _id: userId })
   const project = await ProjectModel.find({ _id: req.params.id })
-  if (project.length > 0) {
-    let updateUserModel = await userModel.findByIdAndUpdate(
+  
+    await userModel.findByIdAndUpdate(
       req.params.id,
-
       { $push: { myProjects: project[0] } },
 
       { upsert: true },
-    )
-    console.log(updateUserModel)
-  }
+    ).clone()
 
-  let updatedProject = await ProjectModel.findByIdAndUpdate(
-    req.params.id,
+    await ProjectModel.findByIdAndUpdate(
+        req.params.id,
+    
+        { $push: { users: user[0] } },
+        { upsert: true },
+        (err,docs)=>{
+            if(err)res.send(err)
+            res.send(docs)
+        }).clone()
+  
 
-    { $push: { users: user[0] } },
-
-    { upsert: true },
-  )
-
-  res.send(updatedProject)
 }
 
 const removeUserFromProject = async (req, res) => {

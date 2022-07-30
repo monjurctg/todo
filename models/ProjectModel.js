@@ -5,10 +5,12 @@ const ProjectSchema = new Schema({
     projectName:{
         type:String,
     },
-    todos:{
-        type:Array,
-        default:[]
-    },
+    todos:[{
+        name:String,
+        description:String,
+        owner:Object,
+        status:Boolean
+    }],
 
     users:{
         type:Array,  
